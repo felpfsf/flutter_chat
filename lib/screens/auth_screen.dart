@@ -59,9 +59,6 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Test'),
-      ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
