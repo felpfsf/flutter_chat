@@ -16,6 +16,9 @@ final theme = ThemeData().copyWith(
 );
 
 void main() async {
+  // If the app hang on splash screen add this line
+  WidgetsFlutterBinding.ensureInitialized();
+  // Firebase configuration
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
