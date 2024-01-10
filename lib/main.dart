@@ -1,5 +1,8 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat/screens/auth_screen.dart';
+
+import 'firebase_options.dart';
 
 final colorScheme = ColorScheme.fromSeed(
   // brightness: Brightness.dark,
@@ -12,7 +15,10 @@ final theme = ThemeData().copyWith(
   colorScheme: colorScheme,
 );
 
-void main() {
+void main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const FlutterChatApp());
 }
 
