@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -16,11 +17,13 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool _isLogin = true;
+  bool _isAuthenticating = false;
+  File? _selectedImage;
   final _form = GlobalKey<FormState>();
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  File? _selectedImage;
-  bool _isAuthenticating = false;
+  final TextEditingController _usernameController = TextEditingController();
 
   void _submit() async {
     final isValid = _form.currentState!.validate();
@@ -67,6 +70,15 @@ class _AuthScreenState extends State<AuthScreen> {
         final imageUrl = await storageRef.getDownloadURL();
 
         debugPrint(imageUrl);
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredentials.user!.uid)
+            .set({
+          'username': _usernameController.text,
+          'email': userCredentials.user!.email,
+          'image_url': imageUrl,
+        });
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -133,9 +145,10 @@ class _AuthScreenState extends State<AuthScreen> {
                                 .textTheme
                                 .bodyMedium!
                                 .copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onBackground),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                ),
                             keyboardType: TextInputType.emailAddress,
                             autocorrect: false,
                             textCapitalization: TextCapitalization.none,
@@ -150,6 +163,29 @@ class _AuthScreenState extends State<AuthScreen> {
                               return null;
                             },
                           ),
+                          if(!_isLogin)
+                          TextFormField(
+                            decoration:
+                                const InputDecoration(labelText: 'Username'),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                ),
+                            textCapitalization: TextCapitalization.none,
+                            controller: _usernameController,
+                            validator: (value) {
+                              if (value == null ||
+                                  value.trim().isEmpty ||
+                                  value.trim().length < 4) {
+                                return 'Please enter a username with 4 characters long';
+                              }
+                              return null;
+                            },
+                          ),
                           TextFormField(
                             decoration: const InputDecoration(
                               labelText: 'Password',
@@ -158,9 +194,10 @@ class _AuthScreenState extends State<AuthScreen> {
                                 .textTheme
                                 .bodyMedium!
                                 .copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onBackground),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                ),
                             obscureText: true,
                             controller: _passwordController,
                             validator: (value) {
