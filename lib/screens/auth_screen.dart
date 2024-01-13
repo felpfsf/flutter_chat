@@ -25,6 +25,13 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
 
+  void clearForm() {
+    _emailController.clear();
+    _passwordController.clear();
+    _usernameController.clear();
+    FocusScope.of(context).unfocus();
+  }
+
   void _submit() async {
     final isValid = _form.currentState!.validate();
 
@@ -79,6 +86,8 @@ class _AuthScreenState extends State<AuthScreen> {
           'email': userCredentials.user!.email,
           'image_url': imageUrl,
         });
+
+        clearForm();
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -101,6 +110,14 @@ class _AuthScreenState extends State<AuthScreen> {
         _isAuthenticating = false;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _usernameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -163,29 +180,29 @@ class _AuthScreenState extends State<AuthScreen> {
                               return null;
                             },
                           ),
-                          if(!_isLogin)
-                          TextFormField(
-                            decoration:
-                                const InputDecoration(labelText: 'Username'),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onBackground,
-                                ),
-                            textCapitalization: TextCapitalization.none,
-                            controller: _usernameController,
-                            validator: (value) {
-                              if (value == null ||
-                                  value.trim().isEmpty ||
-                                  value.trim().length < 4) {
-                                return 'Please enter a username with 4 characters long';
-                              }
-                              return null;
-                            },
-                          ),
+                          if (!_isLogin)
+                            TextFormField(
+                              decoration:
+                                  const InputDecoration(labelText: 'Username'),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground,
+                                  ),
+                              textCapitalization: TextCapitalization.none,
+                              controller: _usernameController,
+                              validator: (value) {
+                                if (value == null ||
+                                    value.trim().isEmpty ||
+                                    value.trim().length < 4) {
+                                  return 'Please enter a username with 4 characters long';
+                                }
+                                return null;
+                              },
+                            ),
                           TextFormField(
                             decoration: const InputDecoration(
                               labelText: 'Password',
