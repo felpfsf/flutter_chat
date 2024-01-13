@@ -14,7 +14,7 @@ final colorScheme = ColorScheme.fromSeed(
 );
 
 final theme = ThemeData().copyWith(
-  scaffoldBackgroundColor: colorScheme.primary,
+  // scaffoldBackgroundColor: colorScheme.primary,
   colorScheme: colorScheme,
 );
 
